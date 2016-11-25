@@ -1,0 +1,70 @@
+html, body {
+	margin: 0;
+	border: 0;
+	position: absolute;
+}
+
+#board{
+	height: 500px;
+	width: 500px;
+	background: #BBADA0;
+	position: relative;
+}
+
+.tile{
+	height: 100px;
+	width: 100px;
+	position: absolute;
+	vertical-align: middle;
+	line-height: 100px;
+}
+
+.blank{
+	background: white;
+}
+
+.t2{
+	background: #EEE4DA;
+}
+
+.t4{
+	background: #ECE0C8;
+}
+
+.t8{
+	background: #F1B078;
+}
+
+.t16{
+	background: #ED8E4C;
+}
+
+.t32{
+	background: #F47D5D;
+}
+
+.t64{
+	background: #EB5739;
+}
+
+div{
+	font-family: sans-serif;
+	text-align: center;
+
+}
+
+#controls{
+	height: 200px;
+	width: 500px;
+	background: #CBBDB0;
+	position: relative;
+}
+
+.button{
+	height: 65px;
+	width: 100px;
+	position: absolute;
+	background: #BBADA0;
+	vertical-align: middle;
+	line-height: 65px;
+}
