@@ -80,8 +80,8 @@ function draw() {
 //setInterval(draw, 1000);
 
 function move(x=-1, y=0) {
-	if(){
-		
+	if(true){
+		;
 	}
 }
 
