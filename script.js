@@ -1,3 +1,5 @@
+/* This will not be used anymore. I'm going to start 
+to use canvas. */
 var gameBoard = new Array();
 var dim = 4;
 
