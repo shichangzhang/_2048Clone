@@ -22,7 +22,14 @@ var board = [];
 for(c=0; c<tileColumnCount; c++) {
     board[c] = [];
     for(r=0; r<tileRowCount; r++) {
-        board[c][r] = { x: 0, y: 0, number: 0, isNew: false};
+        board[c][r] = { 
+        	x: 0, 
+        	y: 0,
+        	row: r,
+        	col: c, 
+        	number: 0, 
+        	isNew: true 
+        };
     }
 }
 
@@ -39,50 +46,120 @@ function drawBoard() {
         for(r=0; r<tileRowCount; r++) {
             
             //draw background
-        	var tileX = (c*(tileWidth+tilePadding))+tileOffsetLeft;
-        	var tileY = (r*(tileHeight+tilePadding))+tileOffsetTop;
+        	var tile = board[c][r];
+        	var tileX = (r*(tileWidth+tilePadding))+tileOffsetLeft;
+        	var tileY = (c*(tileHeight+tilePadding))+tileOffsetTop;
         	ctx.beginPath();
         	ctx.rect(tileX, tileY, tileWidth, tileHeight);
         	ctx.fillStyle = "#CFC1B8";
         	ctx.fill();
         	ctx.closePath();
 
-        	if(board[c][r].number > 1) {
+        	if(tile.number > 1) {
+        		if(tile.isNew) {
+        		    //set tile position
+        		    tile.x = tileX;
+        		    tile.y = tileY;
+        		    tile.isNew = false;
+        		} else {
+        			//move tile towards new position
+        			var speed = 5;
+        			tileX = (tile.row*(tileWidth+tilePadding))+tileOffsetLeft;
+        			tileY = (tile.col*(tileHeight+tilePadding))+tileOffsetTop;
+        			if(tile.x < tileX) {
+        				tile.x+=speed;
+        			} else if(tile.x > tileX) {
+        				tile.x-=speed;
+        			} else if(tile.y < tileY) {
+        				tile.y+=speed;
+        			} else if(tile.y > tileY) {
+        				tile.y-=speed;
+        			}
+        		}
         		//draw tile
         		ctx.beginPath();
-        		ctx.rect(tileX, tileY, tileWidth, tileHeight);
-        		ctx.fillStyle = colours[Math.log2(board[c][r].number)-1];
+        		ctx.rect(tile.x, tile.y, tileWidth, tileHeight);
+        		ctx.fillStyle = colours[Math.log2(tile.number)-1];
         		ctx.fill();
         		ctx.closePath();
         		//draw number
         		ctx.font = "24px Impact, Charcoal, sans-serif";
      			ctx.textAlign = "center";
         		ctx.fillStyle = "white";
-        		ctx.fillText(board[c][r].number, tileX+tileWidth/2, tileY+tileHeight/2+9,60);
+        		ctx.fillText(tile.number, tile.x+tileWidth/2, tile.y+tileHeight/2+9,60);
         	}
         }
     }
 }
 
 generateColours();
-drawBoard();
 spawnRandomTile();
-drawBoard();
+console.log(board);
 spawnRandomTile();
-drawBoard();
+console.log(board);
+moveUp();
+console.log(board);
 
 function draw() {
-	
-	
-
+	drawBoard();
 }
 
-//setInterval(draw, 1000);
+setInterval(draw, 10);
 
-function move(x=-1, y=0) {
-	if(true){
-		;
+function moveUp() {
+	for(j = 0; j < tileRowCount; j++) {
+		var count = 0;
+		for(i = 0; i < tileColumnCount; i++) {
+			var tile = board[i][j];
+			if(tile.number > 0) {
+				tile.row = j;
+				tile.col = count++;
+			}
+		}
 	}
+}
+
+function moveDown() {
+	for(j = 0; j < tileRowCount; j++) {
+		var count = tileColumnCount-1;
+		for(i = tileColumnCount-1; i > 0; i--) {
+			var tile = board[i][j];
+			if(tile.number > 0) {
+				tile.row = j;
+				tile.col = count--;
+			}
+		}
+	}
+}
+
+function updatePosition(){
+	var temp = [];
+	for(c=0; c<tileColumnCount; c++) {
+		temp[c] = [];
+		for(r=0; r<tileRowCount; r++) {
+			temp[c][r] = { 
+				x: 0, 
+				y: 0,
+				row: 0,
+				col: 0, 
+				number: 0, 
+				isNew: false 
+			};
+		}
+	}
+
+	for(i = 0; i < tileColumnCount; i++) {
+		for(j = 0; j < tileRowCount; j++) {
+			var tile = board[i][j];
+			if(temp[tile.col][tile.row].number === 0) {
+				temp[tile.col][tile.row] = tile;
+			} else {
+				temp[tile.col][tile.row].number *= 2;
+				temp[tile.col][tile.row].isNew = true;
+			}
+		}
+	}
+	board = temp;
 }
 
 function spawnRandomTile() {
@@ -90,10 +167,10 @@ function spawnRandomTile() {
 	var count = 0;
 	var blanks = new Array();
 
-	for(var i = 0; i < tileColumnCount; i++) {
-		for(var j = 0; j < tileRowCount; j++) {
+	for(i = 0; i < tileColumnCount; i++) {
+		for(j = 0; j < tileRowCount; j++) {
 			var tile = board[i][j];
-			if(tile.number === 0){
+			if(tile.number === 0) {
 				blanks.splice(0,0,tile);
 			}
 		}
@@ -103,13 +180,13 @@ function spawnRandomTile() {
 		var rand = Math.floor(blanks.length*Math.random());
 		var randTile = blanks[rand%(blanks.length)];
 		
-		randTile.isNew = false;
+		randTile.isNew = true;
 		randTile.number = number;
 	}
 }
 
 function generateColours() {
-	for(var i = 0; i < 20; i++) {
+	for(i = 0; i < 20; i++) {
 		colours[i] = randomColour();
 	}
 }
