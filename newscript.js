@@ -43,9 +43,12 @@ for(r=0; r<tileRowCount; r++) {
         	row: r,
         	col: c, 
         	number: 0, 
-        	isNew: true 
         };				
     }
+}
+
+function drawScore() {
+	
 }
 
 function drawBoard() {
@@ -85,8 +88,19 @@ function drawTiles(){
         		//draw number
         		ctx.font = "24px Impact, Charcoal, sans-serif";
      			ctx.textAlign = "center";
+        		ctx.strokeStyle = "black";
         		ctx.fillStyle = "white";
+        		// setup these to match your needs
+        		ctx.miterLimit = 2;
+        		ctx.lineJoin = "circle";
+        		ctx.lineWidth = 3;
+        		ctx.strokeText(tile.number, tile.x+tileWidth/2, tile.y+tileHeight/2+9,60);
+        		ctx.lineWidth = 1;
         		ctx.fillText(tile.number, tile.x+tileWidth/2, tile.y+tileHeight/2+9,60);
+
+        		//code from stackoverflow
+        		//context.font = "40px Helvetica";
+
         	}
         }
     }
@@ -308,7 +322,6 @@ function updatePosition(){
         		row: r,
         		col: c, 
         		number: 0, 
-        		isNew: true 
         	};				
     	}
 	}
@@ -321,7 +334,6 @@ function updatePosition(){
 					temp[tile.row][tile.col] = tile;
 				} else {
 					temp[tile.row][tile.col].number *= 2;
-					temp[tile.row][tile.col].isNew = true;
 				}
 			}
 		}
@@ -352,7 +364,6 @@ function spawnRandomTile() {
 		var rand = Math.floor(blanks.length*Math.random());
 		var randTile = blanks[rand%(blanks.length)];
 		
-		randTile.isNew = false;
 		randTile.number = number;
 	}
 }
