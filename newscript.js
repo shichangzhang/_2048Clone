@@ -73,10 +73,15 @@ function drawBoard() {
         			} else if(tile.x > tileX) {
         				tile.x-=speed;
         			} else if(tile.y < tileY) {
+				console.log("tile is at "+tile.y+","+tile.x);
+				console.log("tile number is "+tile.number);
         				tile.y+=speed;
         			} else if(tile.y > tileY) {
+				console.log("tile is at "+tile.y+","+tile.x);
+				console.log("tile number is "+tile.number);
         				tile.y-=speed;
         			}
+				
         		}
         		//draw tile
         		ctx.beginPath();
