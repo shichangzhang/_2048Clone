@@ -19,12 +19,14 @@ var tileOffsetTop = 185;
 var tileOffsetLeft = 25;
 var board = [];
 
-for(c=0; c<tileColumnCount; c++) {
-    board[c] = [];
-    for(r=0; r<tileRowCount; r++) {
-        board[c][r] = { 
-        	x: 0, 
-        	y: 0,
+for(r=0; r<tileRowCount; r++) {
+    board[r] = [];
+    for(c=0; c<tileColumnCount; c++) {
+        var tileX = (c*(tileWidth+tilePadding))+tileOffsetLeft;
+        var tileY = (r*(tileHeight+tilePadding))+tileOffsetTop;
+        board[r][c] = { 
+        	x: tileX, 
+        	y: tileY,
         	row: r,
         	col: c, 
         	number: 0, 
@@ -42,13 +44,13 @@ function drawBoard() {
 	ctx.fill();
 	ctx.closePath();
 
-    for(c=0; c<tileColumnCount; c++) {
-        for(r=0; r<tileRowCount; r++) {
+    for(r=0; r<tileRowCount; r++) {
+        for(c=0; c<tileColumnCount; c++) {
             
             //draw background
-        	var tile = board[c][r];
-        	var tileX = (r*(tileWidth+tilePadding))+tileOffsetLeft;
-        	var tileY = (c*(tileHeight+tilePadding))+tileOffsetTop;
+        	var tile = board[r][c];
+        	var tileX = (c*(tileWidth+tilePadding))+tileOffsetLeft;
+        	var tileY = (r*(tileHeight+tilePadding))+tileOffsetTop;
         	ctx.beginPath();
         	ctx.rect(tileX, tileY, tileWidth, tileHeight);
         	ctx.fillStyle = "#CFC1B8";
@@ -64,8 +66,8 @@ function drawBoard() {
         		} else {
         			//move tile towards new position
         			var speed = 5;
-        			tileX = (tile.row*(tileWidth+tilePadding))+tileOffsetLeft;
-        			tileY = (tile.col*(tileHeight+tilePadding))+tileOffsetTop;
+        			tileX = (tile.col*(tileWidth+tilePadding))+tileOffsetLeft;
+        			tileY = (tile.row*(tileHeight+tilePadding))+tileOffsetTop;
         			if(tile.x < tileX) {
         				tile.x+=speed;
         			} else if(tile.x > tileX) {
@@ -94,11 +96,8 @@ function drawBoard() {
 
 generateColours();
 spawnRandomTile();
-console.log(board);
 spawnRandomTile();
-console.log(board);
-moveUp();
-console.log(board);
+moveDown();
 
 function draw() {
 	drawBoard();
@@ -107,55 +106,71 @@ function draw() {
 setInterval(draw, 10);
 
 function moveUp() {
-	for(j = 0; j < tileRowCount; j++) {
+	for(c = 0; c < tileColumnCount; c++) {
 		var count = 0;
-		for(i = 0; i < tileColumnCount; i++) {
-			var tile = board[i][j];
+		for(r = 0; r < tileRowCount; r++) {
+			var tile = board[r][c];
 			if(tile.number > 0) {
-				tile.row = j;
-				tile.col = count++;
+				tile.row = count++;
+				tile.col = c;
+				console.log("moving from "+r+","+c+" to "+tile.row+","+tile.col);
 			}
 		}
 	}
 }
 
 function moveDown() {
-	for(j = 0; j < tileRowCount; j++) {
-		var count = tileColumnCount-1;
-		for(i = tileColumnCount-1; i > 0; i--) {
-			var tile = board[i][j];
+	for(c = 0; c < tileColumnCount; c++) {
+		var count = tileRowCount-1;
+		for(r = tileRowCount-1; r >= 0; r--) {
+			var tile = board[r][c];
 			if(tile.number > 0) {
-				tile.row = j;
-				tile.col = count--;
+				tile.row = count--;
+				tile.col = c;
+				console.log("moving from "+r+","+c+" to "+tile.row+","+tile.col);
 			}
 		}
 	}
 }
 
+//Check if tiles are still moving
+function isStillMoving(){
+	for(r=0; r<tileRowCount; r++) {
+		for(c=0; c<tileColumnCount; c++) {
+			var t = board[r][c];
+			if(board.number>0 && board){
+				return true;				
+			}
+		}
+	}
+	return false;
+}
+
 function updatePosition(){
 	var temp = [];
-	for(c=0; c<tileColumnCount; c++) {
-		temp[c] = [];
-		for(r=0; r<tileRowCount; r++) {
-			temp[c][r] = { 
+	for(r=0; r<tileRowCount; r++) {
+		temp[r] = [];
+		for(c=0; c<tileColumnCount; c++) {
+			temp[r][c] = { 
 				x: 0, 
 				y: 0,
-				row: 0,
-				col: 0, 
+				row: r,
+				col: c, 
 				number: 0, 
-				isNew: false 
+				isNew: true 
 			};
 		}
 	}
 
-	for(i = 0; i < tileColumnCount; i++) {
-		for(j = 0; j < tileRowCount; j++) {
-			var tile = board[i][j];
-			if(temp[tile.col][tile.row].number === 0) {
-				temp[tile.col][tile.row] = tile;
+	for(r = 0; r < tileRowCount; r++) {
+		for(c = 0; c < tileColumnCount; c++) {
+			var tile = board[r][c];
+			var newTile = temp[tile.row][tile.col];
+			if(newTile.number === 0) {
+				newTile = tile;
 			} else {
-				temp[tile.col][tile.row].number *= 2;
-				temp[tile.col][tile.row].isNew = true;
+				newTile.number *= 2;
+				newTile.isNew = true;
 			}
 		}
 	}
