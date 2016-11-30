@@ -16,6 +16,65 @@ window.onload = function(){
 	spawnRandomTile(gameBoard);
 };
 
+function drawMovingTiles() {
+	//#BBADA0: background
+	//#CFC1B8: blank
+	ctx.beginPath();
+	ctx.rect(boardOffsetLeft, boardOffsetTop, boardWidth, boardHeight);
+	ctx.fillStyle = "#BBADA0";
+	ctx.fill();
+	ctx.closePath();
+
+    for(r=0; r<tileRowCount; r++) {
+        for(c=0; c<tileColumnCount; c++) {
+            
+            //draw background
+        	var tile = board[r][c];
+        	var tileX = (c*(tileWidth+tilePadding))+tileOffsetLeft;
+        	var tileY = (r*(tileHeight+tilePadding))+tileOffsetTop;
+        	
+        	if(tile.number > 1) {
+        		if(tile.isNew) {
+        		    //set tile position
+        		    tile.x = tileX;
+        		    tile.y = tileY;
+        		    tile.isNew = false;
+        		} else {
+        			//move tile towards new position
+        			var speed = 5;
+        			tileX = (tile.col*(tileWidth+tilePadding))+tileOffsetLeft;
+        			tileY = (tile.row*(tileHeight+tilePadding))+tileOffsetTop;
+        			if(tile.x < tileX) {
+        				tile.x+=speed;
+        			} else if(tile.x > tileX) {
+        				tile.x-=speed;
+        			} else if(tile.y < tileY) {
+				console.log("tile is at "+tile.y+","+tile.x);
+				console.log("tile number is "+tile.number);
+        				tile.y+=speed;
+        			} else if(tile.y > tileY) {
+				console.log("tile is at "+tile.y+","+tile.x);
+				console.log("tile number is "+tile.number);
+        				tile.y-=speed;
+        			}
+				
+        		}
+        		//draw tile
+        		ctx.beginPath();
+        		ctx.rect(tile.x, tile.y, tileWidth, tileHeight);
+        		ctx.fillStyle = colours[Math.log2(tile.number)-1];
+        		ctx.fill();
+        		ctx.closePath();
+        		//draw number
+        		ctx.font = "24px Impact, Charcoal, sans-serif";
+     			ctx.textAlign = "center";
+        		ctx.fillStyle = "white";
+        		ctx.fillText(tile.number, tile.x+tileWidth/2, tile.y+tileHeight/2+9,60);
+        	}
+        }
+    }
+}
+
 function setIntervalX(func, delay, reps){
 	var x = 0;
 	var t = window.setInterval(function(){

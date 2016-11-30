@@ -2,6 +2,19 @@ window.onload = function(){
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 
+//Lock
+var lock = false;
+
+//Controls
+var LEFT = 37;
+var UP = 38;
+var RIGHT = 39;
+var DOWN = 40;
+var leftPressed = false;
+var upPressed = false;
+var rightPressed = false;
+var downPressed = false;
+
 //Colour of tiles
 var colours = new Array();
 
@@ -31,7 +44,7 @@ for(r=0; r<tileRowCount; r++) {
         	col: c, 
         	number: 0, 
         	isNew: true 
-        };
+        };				
     }
 }
 
@@ -46,8 +59,6 @@ function drawBoard() {
 
     for(r=0; r<tileRowCount; r++) {
         for(c=0; c<tileColumnCount; c++) {
-            
-            //draw background
         	var tile = board[r][c];
         	var tileX = (c*(tileWidth+tilePadding))+tileOffsetLeft;
         	var tileY = (r*(tileHeight+tilePadding))+tileOffsetTop;
@@ -56,33 +67,15 @@ function drawBoard() {
         	ctx.fillStyle = "#CFC1B8";
         	ctx.fill();
         	ctx.closePath();
+        }
+    }
+}
 
-        	if(tile.number > 1) {
-        		if(tile.isNew) {
-        		    //set tile position
-        		    tile.x = tileX;
-        		    tile.y = tileY;
-        		    tile.isNew = false;
-        		} else {
-        			//move tile towards new position
-        			var speed = 5;
-        			tileX = (tile.col*(tileWidth+tilePadding))+tileOffsetLeft;
-        			tileY = (tile.row*(tileHeight+tilePadding))+tileOffsetTop;
-        			if(tile.x < tileX) {
-        				tile.x+=speed;
-        			} else if(tile.x > tileX) {
-        				tile.x-=speed;
-        			} else if(tile.y < tileY) {
-				console.log("tile is at "+tile.y+","+tile.x);
-				console.log("tile number is "+tile.number);
-        				tile.y+=speed;
-        			} else if(tile.y > tileY) {
-				console.log("tile is at "+tile.y+","+tile.x);
-				console.log("tile number is "+tile.number);
-        				tile.y-=speed;
-        			}
-				
-        		}
+function drawTiles(){
+	for(r=0; r<tileRowCount; r++) {
+		for(c=0; c<tileColumnCount; c++) {
+			var tile = board[r][c];
+			if(tile.number > 1) {
         		//draw tile
         		ctx.beginPath();
         		ctx.rect(tile.x, tile.y, tileWidth, tileHeight);
@@ -99,18 +92,37 @@ function drawBoard() {
     }
 }
 
+//Start Game
 generateColours();
 spawnRandomTile();
 spawnRandomTile();
-moveDown();
 
 function draw() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	drawBoard();
+	drawTiles();
+
+	if(leftPressed) {
+		moveLeft();
+	}
+	if(upPressed) {
+		moveUp();
+	}
+	if(rightPressed) {
+		moveRight();
+	}
+	if(downPressed) {
+		moveDown();
+	}
 }
 
 setInterval(draw, 10);
 
 function moveUp() {
+	if(lock){
+		return;
+	}
+	lock = true;
 	for(c = 0; c < tileColumnCount; c++) {
 		var count = 0;
 		for(r = 0; r < tileRowCount; r++) {
@@ -118,23 +130,119 @@ function moveUp() {
 			if(tile.number > 0) {
 				tile.row = count++;
 				tile.col = c;
-				console.log("moving from "+r+","+c+" to "+tile.row+","+tile.col);
+				//console.log("moving from "+r+","+c+" to "+tile.row+","+tile.col);
 			}
 		}
 	}
+
+	moveTiles();
 }
 
 function moveDown() {
+	if(lock){
+		return;
+	}
+	lock = true;
 	for(c = 0; c < tileColumnCount; c++) {
-		var count = tileRowCount-1;
+		var count = 0;
 		for(r = tileRowCount-1; r >= 0; r--) {
 			var tile = board[r][c];
 			if(tile.number > 0) {
-				tile.row = count--;
+				tile.row = 3-count++;
 				tile.col = c;
-				console.log("moving from "+r+","+c+" to "+tile.row+","+tile.col);
+				//console.log("moving from "+r+","+c+" to "+tile.row+","+tile.col);
 			}
 		}
+	}
+
+	moveTiles();
+}
+
+function moveLeft() {
+	if(lock){
+		return;
+	}
+	lock = true;
+	for(r = 0; r < tileRowCount; r++) {
+		var count = 0;
+		for(c = 0; c < tileColumnCount; c++) {
+			var tile = board[r][c];
+			if(tile.number > 0) {
+				tile.row = r;
+				tile.col = count++;
+				//console.log("moving from "+r+","+c+" to "+tile.row+","+tile.col);
+			}
+		}
+	}
+
+	moveTiles();
+}
+
+function moveRight() {
+	if(lock){
+		return;
+	}
+	lock = true;
+	for(r = 0; r < tileRowCount; r++) {
+		var count = 0;
+		for(c = tileColumnCount-1; c >= 0; c--) {
+			var tile = board[r][c];
+			if(tile.number > 0) {
+				tile.row = r;
+				tile.col = 3-count++;
+				//console.log("moving from "+r+","+c+" to "+tile.row+","+tile.col);
+			}
+		}
+	}
+
+	moveTiles();
+}
+
+function moveTiles(){
+
+	var t = setInterval(move, 10);
+	var finished = false;
+	var moved = false;
+
+	function move(){
+		if(finished){
+			clearInterval(t);
+			updatePosition();
+			if(moved){
+				spawnRandomTile();
+			}
+			lock = false;
+		} else {
+			finished = true;
+			for(r=0; r<tileRowCount; r++) {
+				for(c=0; c<tileColumnCount; c++) {
+					var tile = board[r][c];
+					if(tile.number > 1) {
+    	    			//move tile towards new position
+    	    			var speed = 5;
+    	    			tileX = (tile.col*(tileWidth+tilePadding))+tileOffsetLeft;
+    	    			tileY = (tile.row*(tileHeight+tilePadding))+tileOffsetTop;
+    	    			if(tile.x < tileX) {
+    	    				tile.x+=speed;
+    	    				finished = false;
+    	    				moved = true;
+    	    			} else if(tile.x > tileX) {
+    	    				tile.x-=speed;
+    	    				finished = false;
+    	    				moved = true;
+    	    			} else if(tile.y < tileY) {
+    	    				tile.y+=speed;
+    	    				finished = false;
+    	    				moved = true;
+    	    			} else if(tile.y > tileY) {
+    	    				tile.y-=speed;
+    	    				finished = false;
+    	    				moved = true;
+    	    			}	
+    	    		}
+    	    	}
+    		}
+    	}
 	}
 }
 
@@ -143,7 +251,7 @@ function isStillMoving(){
 	for(r=0; r<tileRowCount; r++) {
 		for(c=0; c<tileColumnCount; c++) {
 			var t = board[r][c];
-			if(board.number>0 && board){
+			if(t.number > 0 && (t.row != r || t.col != c)){
 				return true;				
 			}
 		}
@@ -154,32 +262,40 @@ function isStillMoving(){
 function updatePosition(){
 	var temp = [];
 	for(r=0; r<tileRowCount; r++) {
-		temp[r] = [];
-		for(c=0; c<tileColumnCount; c++) {
-			temp[r][c] = { 
-				x: 0, 
-				y: 0,
-				row: r,
-				col: c, 
-				number: 0, 
-				isNew: true 
-			};
-		}
+    	temp[r] = [];
+    	for(c=0; c<tileColumnCount; c++) {
+        	var tileX = (c*(tileWidth+tilePadding))+tileOffsetLeft;
+        	var tileY = (r*(tileHeight+tilePadding))+tileOffsetTop;
+        	temp[r][c] = { 
+        		x: tileX, 
+        		y: tileY,
+        		row: r,
+        		col: c, 
+        		number: 0, 
+        		isNew: true 
+        	};				
+    	}
 	}
 
 	for(r = 0; r < tileRowCount; r++) {
 		for(c = 0; c < tileColumnCount; c++) {
 			var tile = board[r][c];
-			var newTile = temp[tile.row][tile.col];
-			if(newTile.number === 0) {
-				newTile = tile;
-			} else {
-				newTile.number *= 2;
-				newTile.isNew = true;
+			if(tile.number > 0){
+				if(temp[tile.row][tile.col].number === 0) {
+					temp[tile.row][tile.col] = tile;
+				} else {
+					temp[tile.row][tile.col].number *= 2;
+					temp[tile.row][tile.col].isNew = true;
+				}
 			}
 		}
 	}
-	board = temp;
+
+	for(r = 0; r < tileRowCount; r++) {
+		for(c = 0; c < tileColumnCount; c++) {
+			board[r][c] = temp[r][c];
+		}
+	}
 }
 
 function spawnRandomTile() {
@@ -200,8 +316,41 @@ function spawnRandomTile() {
 		var rand = Math.floor(blanks.length*Math.random());
 		var randTile = blanks[rand%(blanks.length)];
 		
-		randTile.isNew = true;
+		randTile.isNew = false;
 		randTile.number = number;
+	}
+}
+
+document.addEventListener("keydown",keyDownHandler, false);
+document.addEventListener("keyup",keyUpHandler, false);
+
+function keyDownHandler(e) {
+	if(e.keyCode == LEFT) {
+		leftPressed = true;
+	} 
+	else if(e.keyCode == UP) {
+		upPressed = true;
+	}
+	else if(e.keyCode == DOWN) {
+		downPressed = true;
+	}
+	else if(e.keyCode == RIGHT) {
+		rightPressed = true;	
+	}
+}
+
+function keyUpHandler(e) {
+	if(e.keyCode == LEFT) {
+		leftPressed = false;
+	} 
+	else if(e.keyCode == UP) {
+		upPressed = false;
+	}
+	else if(e.keyCode == DOWN) {
+		downPressed = false;
+	}
+	else if(e.keyCode == RIGHT) {
+		rightPressed = false;
 	}
 }
 
