@@ -125,9 +125,18 @@ function moveUp() {
 	lock = true;
 	for(c = 0; c < tileColumnCount; c++) {
 		var count = 0;
+		var number = 0;
 		for(r = 0; r < tileRowCount; r++) {
 			var tile = board[r][c];
 			if(tile.number > 0) {
+				if(number === 0) {
+					number = tile.number;
+				} else if(tile.number === number) {
+					count--;
+					number = 0;
+				} else {
+					number = tile.number;
+				}
 				tile.row = count++;
 				tile.col = c;
 				//console.log("moving from "+r+","+c+" to "+tile.row+","+tile.col);
@@ -145,9 +154,18 @@ function moveDown() {
 	lock = true;
 	for(c = 0; c < tileColumnCount; c++) {
 		var count = 0;
+		var number = 0;
 		for(r = tileRowCount-1; r >= 0; r--) {
 			var tile = board[r][c];
 			if(tile.number > 0) {
+				if(number === 0) {
+					number = tile.number;
+				} else if(tile.number === number) {
+					count--;
+					number = 0;
+				} else {
+					number = tile.number;
+				}
 				tile.row = 3-count++;
 				tile.col = c;
 				//console.log("moving from "+r+","+c+" to "+tile.row+","+tile.col);
@@ -165,9 +183,18 @@ function moveLeft() {
 	lock = true;
 	for(r = 0; r < tileRowCount; r++) {
 		var count = 0;
+		var number = 0;
 		for(c = 0; c < tileColumnCount; c++) {
 			var tile = board[r][c];
 			if(tile.number > 0) {
+				if(number === 0) {
+					number = tile.number;
+				} else if(tile.number === number) {
+					count--;
+					number = 0;
+				} else {
+					number = tile.number;
+				}
 				tile.row = r;
 				tile.col = count++;
 				//console.log("moving from "+r+","+c+" to "+tile.row+","+tile.col);
@@ -185,9 +212,18 @@ function moveRight() {
 	lock = true;
 	for(r = 0; r < tileRowCount; r++) {
 		var count = 0;
+		var number = 0;
 		for(c = tileColumnCount-1; c >= 0; c--) {
 			var tile = board[r][c];
 			if(tile.number > 0) {
+				if(number === 0) {
+					number = tile.number;
+				} else if(tile.number === number) {
+					count--;
+					number = 0;
+				} else {
+					number = tile.number;
+				}
 				tile.row = r;
 				tile.col = 3-count++;
 				//console.log("moving from "+r+","+c+" to "+tile.row+","+tile.col);
