@@ -18,6 +18,19 @@ var downPressed = false;
 //Colour of tiles
 var colours = new Array();
 
+//Game name
+var nameWidth = 120;
+var nameHeight = 120;
+var nameOffsetTop = 15;
+var nameOffsetLeft = 15;
+
+//Score
+var score = 0;
+var scoreWidth = 155;
+var scoreHeight = 120;
+var scoreOffsetTop = 15;
+var scoreOffsetLeft = 150;
+
 //Board background
 var boardWidth = 290;
 var boardHeight = 290;
@@ -47,8 +60,38 @@ for(r=0; r<tileRowCount; r++) {
     }
 }
 
+function drawName() {
+	ctx.beginPath();
+	ctx.rect(nameOffsetLeft, nameOffsetTop, nameWidth, nameHeight);
+	ctx.fillStyle = colours[11];
+	ctx.fill();
+	ctx.closePath();
+
+	ctx.font = "48px Impact, Charcoal, sans-serif";
+	ctx.textAlign = "center";
+	ctx.strokeStyle = "black";
+	ctx.fillStyle = "white";
+    // setup these to match your needs
+    ctx.miterLimit = 2;
+    ctx.lineJoin = "circle";
+    ctx.lineWidth = 3;
+    ctx.strokeText(2048, nameWidth/2+nameOffsetLeft, nameHeight/2+nameOffsetTop+18, 120);
+    ctx.lineWidth = 1;
+    ctx.fillText(2048, nameWidth/2+nameOffsetLeft, nameHeight/2+nameOffsetTop+18, 120);
+}
+
 function drawScore() {
-	
+	ctx.beginPath();
+	ctx.rect(scoreOffsetLeft, scoreOffsetTop, scoreWidth, scoreHeight);
+	ctx.fillStyle = "#BBADA0";
+	ctx.fill();
+	ctx.closePath();
+
+	ctx.font = "30px Impact, Charcoal, sans-serif";
+	ctx.textAlign = "center";
+	ctx.fillStyle = "#CFC1B8";
+    ctx.fillText("SCORE", scoreWidth/2+scoreOffsetLeft, scoreHeight/4+scoreOffsetTop+12.5, 120);
+     ctx.fillText(score, scoreWidth/2+scoreOffsetLeft, 3*scoreHeight/4+scoreOffsetTop, 120);
 }
 
 function drawBoard() {
@@ -115,6 +158,8 @@ function draw() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	drawBoard();
 	drawTiles();
+	drawScore();
+	drawName();
 
 	if(leftPressed) {
 		moveLeft();
@@ -334,6 +379,7 @@ function updatePosition(){
 					temp[tile.row][tile.col] = tile;
 				} else {
 					temp[tile.row][tile.col].number *= 2;
+					score += temp[tile.row][tile.col].number;
 				}
 			}
 		}
