@@ -89,9 +89,10 @@ function drawScore() {
 
 	ctx.font = "30px Impact, Charcoal, sans-serif";
 	ctx.textAlign = "center";
-	ctx.fillStyle = "#CFC1B8";
+	ctx.fillStyle = "#F2E6D6";
     ctx.fillText("SCORE", scoreWidth/2+scoreOffsetLeft, scoreHeight/4+scoreOffsetTop+12.5, 120);
-     ctx.fillText(score, scoreWidth/2+scoreOffsetLeft, 3*scoreHeight/4+scoreOffsetTop, 120);
+    ctx.fillStyle = "#FFFAFF";
+    ctx.fillText(score, scoreWidth/2+scoreOffsetLeft, 3*scoreHeight/4+scoreOffsetTop, 120);
 }
 
 function drawBoard() {
@@ -176,6 +177,7 @@ function draw() {
 }
 
 setInterval(draw, 10);
+setInterval(checkGameOver, 500);
 
 function moveUp() {
 	if(lock){
@@ -341,17 +343,53 @@ function moveTiles(){
 	}
 }
 
-//Check if tiles are still moving
-function isStillMoving(){
-	for(r=0; r<tileRowCount; r++) {
-		for(c=0; c<tileColumnCount; c++) {
-			var t = board[r][c];
-			if(t.number > 0 && (t.row != r || t.col != c)){
-				return true;				
+function checkGameOver(){
+	if(!lock && isGameOver()){
+		alert("GameOver!");
+		document.location.reload();
+	}
+}
+
+function isGameOver(){
+	for(c = 0; c < tileColumnCount; c++) {
+		var number = 0;
+		for(r = 0; r < tileRowCount; r++) {
+			var tile = board[r][c];
+			if(tile.number > 0) {
+				if(number === 0) {
+					number = tile.number;
+				} else if(tile.number === number) {
+					number = 0;
+					return false;
+				} else {
+					number = tile.number;
+				}
+			} else {
+				return false;
 			}
 		}
 	}
-	return false;
+
+	for(r = 0; r < tileRowCount; r++) {
+		var number = 0;
+		for(c = 0; c < tileColumnCount; c++) {
+			var tile = board[r][c];
+			if(tile.number > 0) {
+				if(number === 0) {
+					number = tile.number;
+				} else if(tile.number === number) {
+					number = 0;
+					return false;
+				} else {
+					number = tile.number;
+				}
+			} else {
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 function updatePosition(){
