@@ -495,4 +495,9 @@ function randomColour() {
 	return "rgba("+Math.floor(256*Math.random())+", "+Math.floor(256*Math.random())+", "+Math.floor(256*Math.random())+", 1)";
 }
 
+window.moveLeft = moveLeft;
+window.moveRight = moveRight;
+window.moveDown = moveDown;
+window.moveUp = moveUp;
+
 };
