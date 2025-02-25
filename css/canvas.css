@@ -4,7 +4,31 @@
 }
 
 canvas { 
-	background: #FBF8EF; 
-	display: block; 
+    background: #FBF8EF;
+    display: block;
+    margin: 0 auto;
+    height: 84vh;
+}
+
+#controls{
+    background: #FBF8EF;
+    width: 56vh;
+    height: 16vh;
 	margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+}
+
+button {
+    display: block;
+    flex: 1;
+    width: 70px;
+    background: #BBADA0;
+    font-size: 40px;
+    vertical-align: middle;
+    margin-left: 1vh;
+    margin-right: 1vh;
+    margin-top: 0;
+    margin-bottom: 3vh;
+    color: white;
 }
